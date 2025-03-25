@@ -1,0 +1,1 @@
+[0mCMake Error: The current CMakeCache.txt directory /home/matic/self_driving_project/build/bumperbot_description/CMakeCache.txt is different than the directory /home/matic/bumperbot_ws/build/bumperbot_description where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt[0m
