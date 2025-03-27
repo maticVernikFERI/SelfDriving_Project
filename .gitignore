@@ -1,0 +1,33 @@
+# ROS2 workspace build, install, and log directories
+build/
+install/
+log/
+
+# ROS2-specific files
+*.log
+*.pyc
+*.pyo
+*.swp
+
+# VSCode specific settings (if using VSCode)
+.vscode/
+
+# IDE-specific directories
+.idea/
+
+# CMake-generated files
+CMakeLists.txt.user
+CMakeCache.txt
+*.cmake
+
+# Python virtual environment (if used)
+venv/
+
+# User-specific files
+*.sublime-workspace
+*.sublime-project
+
+# Backup files (common ones)
+*~
+*.bak
+*.swp
