@@ -1,33 +1,39 @@
-# ROS2 workspace build, install, and log directories
+# Ignore build, install, and log directories (colcon)
 build/
 install/
 log/
 
-# ROS2-specific files
-*.log
+# Ignore Python cache files
+__pycache__/
 *.pyc
 *.pyo
-*.swp
 
-# VSCode specific settings (if using VSCode)
+# Ignore ROS 2 package artifacts
+.colcon/
+ros2_ws/.colcon/
+
+# Ignore VSCode and JetBrains IDE settings
 .vscode/
-
-# IDE-specific directories
 .idea/
 
-# CMake-generated files
-CMakeLists.txt.user
-CMakeCache.txt
-*.cmake
+# Ignore CLion CMake files
+cmake-build-*/
 
-# Python virtual environment (if used)
+# Ignore generated messages and services
+msg_gen/
+srv_gen/
+action_gen/
+
+# Ignore dependencies installed in the workspace
 venv/
+.env/
+.deps/
 
-# User-specific files
-*.sublime-workspace
-*.sublime-project
-
-# Backup files (common ones)
-*~
-*.bak
+# Ignore any user-specific configuration
 *.swp
+*.swo
+*.bak
+
+# Ignore MacOS and Windows system files
+.DS_Store
+Thumbs.db
