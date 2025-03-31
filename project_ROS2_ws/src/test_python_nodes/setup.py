@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'test_servo_node = test_python_nodes.test_servo_node:main',
         ],
     },
 )

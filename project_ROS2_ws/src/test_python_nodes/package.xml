@@ -9,6 +9,7 @@
 
   <depend>rclp</depend>
   <depend>std_msgs</depend>
+  <depend>pigpio</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
