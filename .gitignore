@@ -37,3 +37,6 @@ venv/
 # Ignore MacOS and Windows system files
 .DS_Store
 Thumbs.db
+
+# Ignore images captured by the camera
+captured_images/
