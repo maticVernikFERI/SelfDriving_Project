@@ -17,7 +17,7 @@ jobs:
     - name: Set up ROS 2
       uses: ros-tooling/setup-ros@v0.7
       with:
-        required-ros-distributions: humble
+        required-ros-distributions: jazzy
 
     - name: Install dependencies
       run: |
@@ -27,6 +27,6 @@ jobs:
 
     - name: Build ROS 2 workspace
       run: |
-        source /opt/ros/humble/setup.bash
+        source /opt/ros/jazzy/setup.bash
         cd project_ROS2_ws
         colcon build --packages-select $(colcon list --names-only)
