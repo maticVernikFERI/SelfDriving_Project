@@ -6,3 +6,5 @@ ros2 run demo_nodes_cpp listener
 ```
 
 V cyclonedds.xml datoteki moreš edino spremenit PI naslov na naslov drugega (laptop nastavi na IP od Raspberry-ja in obratno)
+
+Dela le na direktni Ubuntu (Linux) <-> Raspberry povezavi. Ne dela z WSL-jem (na Windowsu ni blo probano)
