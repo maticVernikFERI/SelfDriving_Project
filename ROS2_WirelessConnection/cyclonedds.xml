@@ -1,0 +1,12 @@
+<CycloneDDS>
+  <Domain>
+    <General>
+      <AllowMulticast>false</AllowMulticast> <!-- disable multicast -->
+    </General>
+    <Discovery>
+      <Peers>
+        <Peer address="10.146.252.174"/> <!-- Laptop's IP -->
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>
