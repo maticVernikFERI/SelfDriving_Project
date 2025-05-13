@@ -13,7 +13,7 @@ https://tools.luxonis.com
 '''
 
 # Get argument first
-nnBlobPath = str((Path(__file__).parent / Path('./best_openvino_2022.1_5shave.blob')).resolve().absolute())
+nnBlobPath = str((Path(__file__).parent / Path('./yolov11n_coneDetection_openvino_2022.1_6shave.blob')).resolve().absolute())
 if 1 < len(sys.argv):
     arg = sys.argv[1]
     nnBlobPath = arg
@@ -46,7 +46,7 @@ xoutNN.setStreamName("detections")
 nnNetworkOut.setStreamName("nnNetwork")
 
 # Properties
-camRgb.setPreviewSize(640, 352) # Adjust to your model's input size
+camRgb.setPreviewSize(640, 640) # Adjust to your model's input size
 camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 camRgb.setInterleaved(False)
 camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
