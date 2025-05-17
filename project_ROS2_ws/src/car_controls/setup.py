@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'cone_detection_publisher'
+package_name = 'car_controls'
 
 setup(
     name=package_name,
@@ -11,7 +11,9 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=['setuptools', 'depthai', 'opencv-python', 'numpy',],
+    install_requires=['setuptools',
+                      'pigpio',
+                      'pynput',],
     zip_safe=True,
     maintainer='matic',
     maintainer_email='matic.vernik1@student.um.si',
@@ -20,7 +22,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'cone_publisher = cone_detection_publisher.cone_publisher:main',
+            'car_node = car_controls.car_node:main',
+            'keyboard_control = car_controls.keyboard_control_node:main',
         ],
     },
 )
