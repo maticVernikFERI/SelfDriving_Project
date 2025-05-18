@@ -1,12 +1,2 @@
-Če ne dela scripta za kamero na Raspberry-ju:
-```
-cd ~/SelfDriving_Project
-python3 -m venv venv
-source venv/bin/activate
-pip install opencv-python
-pip install depthai
-python capture_2fps.py
-
-echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | sudo tee /etc/udev/rules.d/80-movidius.rules
-sudo udevadm control --reload-rules && sudo udevadm trigger
-```
+# Samovozeči RC avto
+Cilj projekta je prilagoditi RC avto, da se vozi sam med rumenimi in modrimi stožci, z uporabo stereo kamere in Raspberry Pi računalnika.
