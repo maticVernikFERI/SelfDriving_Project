@@ -5,9 +5,9 @@ import pigpio
 import time
 
 SERVO_PIN = 18
-ESC_PIN = 19  # Prilagodi glede na tvojo povezavo
+ESC_PIN = 12  # Prilagodi glede na tvojo povezavo
 
-MIN_PULSE = 500
+MIN_PULSE = 1500
 MAX_PULSE = 2500
 
 class CarControlNode(Node):

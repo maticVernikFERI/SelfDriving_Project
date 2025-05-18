@@ -46,15 +46,15 @@ class KeyboardControlNode(Node):
         # Obdelava pritisnjenih tipk
         self.accel = 0
         if 'w' in self.pressed_keys:
-            self.accel = self.clamp(self.accel + 5, -100, 100)
+            self.accel = self.clamp(self.accel + 10, -100, 100)
         if 's' in self.pressed_keys:
-            self.accel = self.clamp(self.accel - 5, -100, 100)
+            self.accel = self.clamp(self.accel - 15, -100, 100)
 
         self.steer = 0
         if 'a' in self.pressed_keys:
-            self.steer = self.clamp(self.steer - 20, -100, 100)
+            self.steer = self.clamp(self.steer + 35, -100, 100)
         if 'd' in self.pressed_keys:
-            self.steer = self.clamp(self.steer + 20, -100, 100)
+            self.steer = self.clamp(self.steer - 35, -100, 100)
 
         # if ' ' in self.pressed_keys:
         #     self.accel = 0
