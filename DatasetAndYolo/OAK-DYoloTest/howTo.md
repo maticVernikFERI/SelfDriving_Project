@@ -1,0 +1,2 @@
+# Runnung Yolo on OAK-D
+To run the Yolo model the stereo camera itself run the  runModel_fromExample_myModel.py script on the computer, the other scriptis are for converting the Yolo model weights to the .blob format (taht can also be tone on this website: https://tools.luxonis.com)
