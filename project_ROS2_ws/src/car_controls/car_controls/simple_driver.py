@@ -43,7 +43,7 @@ class SimpleDriver(Node):
             self.get_logger().warn("No cones detected — failsafe activated.")
         else:
             steer = self.calculate_steering(blue_cones, yellow_cones)
-            accel = 20
+            accel = 8
 
         msg_out = String()
         msg_out.data = f"{accel};{steer}"
@@ -53,9 +53,9 @@ class SimpleDriver(Node):
 
     def calculate_steering(self, blue, yellow):
         if blue and not yellow:
-            return 100  # full right
+            return -100  # full right
         elif yellow and not blue:
-            return -100  # full left
+            return 100  # full left
 
         closest_blue = min(blue, key=lambda c: c[1])
         closest_yellow = min(yellow, key=lambda c: c[1])
@@ -66,7 +66,7 @@ class SimpleDriver(Node):
         # Cross product with heading vector (0, 1): -mid_x
         max_range = 1000.0
         steer = int(max(min(-mid_x / max_range * 100, 100), -100))
-        return steer
+        return -steer
 
 def main(args=None):
     rclpy.init(args=args)
