@@ -12,7 +12,7 @@ MAX_PULSE = 2500
 
 class CarControlNode(Node):
     def __init__(self):
-        super().__init__('car_control_node')
+        super().__init__('car_node')
         self.pi = pigpio.pi()
         self.subscription = self.create_subscription(
             String,
