@@ -14,7 +14,7 @@ class ConePublisher(Node):
     def __init__(self):
         super().__init__('cone_publisher')
         self.publisher_ = self.create_publisher(String, '/cone_detections_3D', 10)
-        self.nnBlobPath = str((Path(__file__).parent / Path('./yolov11n_coneDetection_openvino_2022.1_5shave.blob')).resolve().absolute())
+        self.nnBlobPath = '/home/ivana/Documents/SelfDriving_Project/project_ROS2_ws/models/yolov11n_coneDetection_openvino_2022.1_5shave.blob'
         self.labelMap = ["B", "O", "Y"]  # B = blue, O = orange, Y = yellow
         self.syncNN = True
         self.running = True
