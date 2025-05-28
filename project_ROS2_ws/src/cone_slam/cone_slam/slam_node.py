@@ -17,7 +17,7 @@ class ConeSLAM(Node):
             self.listener_callback,
             10)
 
-        self.landmark_map = {}
+        self.landmarks = []  # List of tuples: (label, x, z)
         self.lock = threading.Lock()
 
         # EKF state
@@ -35,9 +35,9 @@ class ConeSLAM(Node):
     def listener_callback(self, msg):
         detections = msg.data.split("|")
 
-        # --- EKF Prediction Step (simulated forward motion) ---
+        # EKF Prediction Step (simulated forward motion)
         delta_d = 50.0
-        delta_theta = 0.0  # no rotation
+        delta_theta = 0.0
 
         theta = self.mu[2]
         dx = delta_d * np.sin(theta)
@@ -56,14 +56,13 @@ class ConeSLAM(Node):
         self.Sigma = G @ self.Sigma @ G.T + self.Q
         self.path.append((self.mu[0], self.mu[1]))
 
-        # --- EKF Correction Step for Each Detection ---
         with self.lock:
             for det in detections:
                 try:
                     label, x_str, y_str, z_str = det.split(";")
                     x_l, z_l = int(x_str), int(z_str)
 
-                    # Compute expected measurement
+                    # EKF Correction Step
                     x_r, z_r, theta = self.mu
                     dx = x_l - x_r
                     dz = z_l - z_r
@@ -72,30 +71,27 @@ class ConeSLAM(Node):
                     expected_range = math.sqrt(q)
                     expected_bearing = math.atan2(dx, dz) - theta
 
-                    # Assume measured = expected for now
                     z = np.array([expected_range, expected_bearing])
                     z_hat = np.array([expected_range, expected_bearing])
 
-                    # Jacobian
                     H = np.array([
                         [-dx / expected_range, -dz / expected_range, 0],
                         [ dz / q,             -dx / q,             -1]
                     ])
 
-                    # EKF Update
                     S = H @ self.Sigma @ H.T + self.R
                     K = self.Sigma @ H.T @ np.linalg.inv(S)
 
                     y = z - z_hat
-                    y[1] = (y[1] + np.pi) % (2 * np.pi) - np.pi  # normalize
+                    y[1] = (y[1] + np.pi) % (2 * np.pi) - np.pi
 
                     self.mu = self.mu + K @ y
                     self.Sigma = (np.eye(3) - K @ H) @ self.Sigma
 
-                    self.landmark_map[label] = (x_l, z_l)
+                    self.landmarks.append((label, x_l, z_l))
 
                 except Exception as e:
-                    self.get_logger().warn(f"Parse error: {e}")
+                   # self.get_logger().warn(f"Parse error: {e}")
                     continue
 
     def visualize_map(self):
@@ -106,7 +102,7 @@ class ConeSLAM(Node):
                 xs = []
                 zs = []
                 labels = []
-                for label, (x, z) in self.landmark_map.items():
+                for label, x, z in self.landmarks:
                     xs.append(x)
                     zs.append(z)
                     labels.append(label)
