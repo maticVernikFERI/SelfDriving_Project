@@ -11,7 +11,7 @@ This ROS 2 node performs a simple SLAM algorithm using detected cones from a ste
 - Landmark map creation using cones
 - Real-time top-down 2D visualization using matplotlib
 
-## Usage
+## Usage of it
 
 Run SLAM node:
 ```bash
