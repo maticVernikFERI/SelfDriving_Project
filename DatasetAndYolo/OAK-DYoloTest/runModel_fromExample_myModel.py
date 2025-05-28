@@ -50,6 +50,7 @@ camRgb.setPreviewSize(640, 640) # Adjust to your model's input size
 camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
 camRgb.setInterleaved(False)
 camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
+camRgb.setPreviewKeepAspectRatio(False) # ne obreže slike ampak jo stisne skup
 
 monoLeft.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
 monoLeft.setBoardSocket(dai.CameraBoardSocket.CAM_B)
