@@ -3,3 +3,6 @@ Cilj projekta je prilagoditi RC avto, da se vozi sam med rumenimi in modrimi sto
 
 
 https://docs.luxonis.com/software/depthai/resolution-techniques
+https://www.youngwonks.com/blog/Raspberry-Pi-4-Pinout
+
+sudo pigpiod
