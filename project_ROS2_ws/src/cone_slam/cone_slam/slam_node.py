@@ -13,7 +13,7 @@ class ConeSLAM(Node):
         super().__init__('cone_slam_node')
         self.subscription = self.create_subscription(
             String,
-            '/cone_detection',
+            '/cone_detections_3D',
             self.listener_callback,
             10)
 
