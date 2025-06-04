@@ -14,7 +14,7 @@ class ConePublisher(Node):
     def __init__(self):
         super().__init__('cone_publisher')
         self.publisher_ = self.create_publisher(String, '/cone_detections_3D', 10)
-        self.nnBlobPath = str((Path(__file__).parent / Path('./yolov8n_coneDetection_openvino_2022.1_6shave.blob')).resolve().absolute())
+        self.nnBlobPath = str((Path(__file__).parent / Path('./yolov8n_coneDetection_5shave.blob')).resolve().absolute())
         self.labelMap = ["B", "O", "Y"]  # B = blue, O = orange, Y = yellow
         self.syncNN = True
         self.running = True
@@ -41,7 +41,7 @@ class ConePublisher(Node):
         xoutRgb.setStreamName("rgb")
         xoutNN.setStreamName("detections")
 
-        camRgb.setPreviewSize(416, 416)
+        camRgb.setPreviewSize(320, 320)
         camRgb.setResolution(dai.ColorCameraProperties.SensorResolution.THE_1080_P)
         camRgb.setInterleaved(False)
         camRgb.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
@@ -58,13 +58,13 @@ class ConePublisher(Node):
         stereo.setSubpixel(True)
 
         spatialDetectionNetwork.setBlobPath(self.nnBlobPath)
-        spatialDetectionNetwork.setConfidenceThreshold(0.6)
-        spatialDetectionNetwork.setBoundingBoxScaleFactor(0.3)
-        spatialDetectionNetwork.setDepthLowerThreshold(100)
-        spatialDetectionNetwork.setDepthUpperThreshold(12000)
+        spatialDetectionNetwork.setConfidenceThreshold(0.6) 
+        spatialDetectionNetwork.setBoundingBoxScaleFactor(0.3) 
+        spatialDetectionNetwork.setDepthLowerThreshold(100) # 10cm
+        spatialDetectionNetwork.setDepthUpperThreshold(12000) # 12m
 
         spatialDetectionNetwork.setNumClasses(len(self.labelMap))
-        spatialDetectionNetwork.setCoordinateSize(4)
+        spatialDetectionNetwork.setCoordinateSize(4) 
         spatialDetectionNetwork.setIouThreshold(0.5)
 
         monoLeft.out.link(stereo.left)
