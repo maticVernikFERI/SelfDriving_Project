@@ -24,6 +24,7 @@ setup(
         'console_scripts': [
             'car_node = car_controls.car_node:main',
             'keyboard_control = car_controls.keyboard_control_node:main',
+            'simple_driver = car_controls.simple_driver:main',
         ],
     },
 )
