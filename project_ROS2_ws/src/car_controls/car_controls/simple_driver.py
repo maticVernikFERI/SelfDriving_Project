@@ -42,7 +42,7 @@ class SimpleDriver(Node):
             steer = 0
             self.get_logger().warn("No cones detected — failsafe activated.")
         else:
-            steer = self.calculate_steering(blue_cones, yellow_cones)
+            steer = (self.calculate_steering(blue_cones, yellow_cones))
             accel = 8
 
         msg_out = String()
@@ -65,7 +65,7 @@ class SimpleDriver(Node):
 
         # Cross product with heading vector (0, 1): -mid_x
         max_range = 1000.0
-        steer = int(max(min(-mid_x / max_range * 100, 100), -100))
+        steer = -(int(max(min(-mid_x / max_range * 100, 100), -100)))
         return -steer
 
 def main(args=None):

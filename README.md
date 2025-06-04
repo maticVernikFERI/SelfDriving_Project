@@ -6,3 +6,6 @@ https://docs.luxonis.com/software/depthai/resolution-techniques
 https://www.youngwonks.com/blog/Raspberry-Pi-4-Pinout
 
 sudo pigpiod
+
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
