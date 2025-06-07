@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'cone_slam = cone_slam.slam_node:main',
+                'slam_node = cone_slam.slam_node:main',
         ],
     },
 )

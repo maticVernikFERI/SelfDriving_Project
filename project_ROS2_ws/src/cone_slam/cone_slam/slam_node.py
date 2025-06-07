@@ -1,143 +1,99 @@
-#!/usr/bin/env python3
+#!/home/ivana/Documents/SelfDriving_Project/project_ROS2_ws/gtsam_venv/bin/python
 
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-import threading
-import matplotlib.pyplot as plt
-import math
+import gtsam
 import numpy as np
+import matplotlib.pyplot as plt
+import threading
 
-class ConeSLAM(Node):
+class GTSAMConeSLAM(Node):
     def __init__(self):
-        super().__init__('cone_slam_node')
+        super().__init__('gtsam_cone_slam')
         self.subscription = self.create_subscription(
             String,
             '/cone_detections_3D',
             self.listener_callback,
             10)
 
-        self.landmarks = []  # List of tuples: (label, x, z)
-        self.lock = threading.Lock()
-
-        # EKF state
-        self.mu = np.array([0.0, 0.0, 0.0])           # [x, z, theta]
-        self.Sigma = np.eye(3) * 1e-3                 # Initial small uncertainty
-        self.Q = np.diag([5.0, 5.0, np.deg2rad(2)])   # Motion noise
-        self.R = np.diag([50.0, np.deg2rad(5)])       # Measurement noise
-
+        self.graph = gtsam.NonlinearFactorGraph()
+        self.initial_estimate = gtsam.Values()
+        self.landmark_ids = {}
+        self.pose_index = 0
         self.path = []
 
-        self.get_logger().info("Cone SLAM node started 🚗📍")
+        self.prev_pose = gtsam.Pose2(0.0, 0.0, 0.0)
+        self.prev_key = gtsam.symbol('x', self.pose_index)
+        self.initial_estimate.insert(self.prev_key, self.prev_pose)
 
-        threading.Thread(target=self.visualize_map, daemon=True).start()
+        # Prior
+        prior_noise = gtsam.noiseModel.Diagonal.Sigmas(np.array([1e-3, 1e-3, 1e-2]))
+        self.graph.add(gtsam.PriorFactorPose2(self.prev_key, self.prev_pose, prior_noise))
+
+        self.lock = threading.Lock()
+        threading.Thread(target=self.visualize, daemon=True).start()
+        self.get_logger().info("GTSAM Cone SLAM node started.")
 
     def listener_callback(self, msg):
         detections = msg.data.split("|")
+        self.pose_index += 1
+        key = gtsam.symbol('x', self.pose_index)
 
-        # EKF Prediction Step (simulated forward motion)
-        delta_d = 50.0
-        delta_theta = 0.0
-
-        theta = self.mu[2]
-        dx = delta_d * np.sin(theta)
-        dz = delta_d * np.cos(theta)
-
-        self.mu[0] += dx
-        self.mu[1] += dz
-        self.mu[2] += delta_theta
-
-        G = np.array([
-            [1, 0, delta_d * np.cos(theta)],
-            [0, 1, -delta_d * np.sin(theta)],
-            [0, 0, 1]
-        ])
-
-        self.Sigma = G @ self.Sigma @ G.T + self.Q
-        self.path.append((self.mu[0], self.mu[1]))
+        # Simulate 10cm forward movement
+        new_pose = self.prev_pose.compose(gtsam.Pose2(0.0, 0.1, 0.0))
+        odom_noise = gtsam.noiseModel.Diagonal.Sigmas(np.array([0.01, 0.01, 0.01]))
+        self.graph.add(gtsam.BetweenFactorPose2(self.prev_key, key, gtsam.Pose2(0.0, 0.1, 0.0), odom_noise))
+        self.initial_estimate.insert(key, new_pose)
+        self.prev_key = key
+        self.prev_pose = new_pose
+        self.path.append((new_pose.x(), new_pose.y()))
 
         with self.lock:
             for det in detections:
                 try:
-                    label, x_str, y_str, z_str = det.split(";")
-                    x_l, z_l = int(x_str), int(z_str)
+                    label, x_str, _, z_str = det.split(";")
+                    x, y = float(x_str) / 1000.0, float(z_str) / 1000.0
+                    lm_key = gtsam.symbol('l', int(label[-1]))  # Simple hash
 
-                    # EKF Correction Step
-                    x_r, z_r, theta = self.mu
-                    dx = x_l - x_r
-                    dz = z_l - z_r
-                    q = dx**2 + dz**2
+                    if lm_key not in self.landmark_ids:
+                        self.initial_estimate.insert(lm_key, gtsam.Point2(x, y))
+                        self.landmark_ids[lm_key] = (x, y)
 
-                    expected_range = math.sqrt(q)
-                    expected_bearing = math.atan2(dx, dz) - theta
-
-                    z = np.array([expected_range, expected_bearing])
-                    z_hat = np.array([expected_range, expected_bearing])
-
-                    H = np.array([
-                        [-dx / expected_range, -dz / expected_range, 0],
-                        [ dz / q,             -dx / q,             -1]
-                    ])
-
-                    S = H @ self.Sigma @ H.T + self.R
-                    K = self.Sigma @ H.T @ np.linalg.inv(S)
-
-                    y = z - z_hat
-                    y[1] = (y[1] + np.pi) % (2 * np.pi) - np.pi
-
-                    self.mu = self.mu + K @ y
-                    self.Sigma = (np.eye(3) - K @ H) @ self.Sigma
-
-                    self.landmarks.append((label, x_l, z_l))
-
-                except Exception as e:
-                   # self.get_logger().warn(f"Parse error: {e}")
+                    meas = gtsam.Point2(x, y)
+                    meas_noise = gtsam.noiseModel.Isotropic.Sigma(2, 0.1)
+                    self.graph.add(gtsam.BearingRangeFactor2D(
+                        key, lm_key, new_pose.bearing(meas), new_pose.range(meas), meas_noise))
+                except:
                     continue
 
-    def visualize_map(self):
+    def visualize(self):
         plt.ion()
         fig, ax = plt.subplots()
         while True:
-            with self.lock:
-                xs = []
-                zs = []
-                labels = []
-                for label, x, z in self.landmarks:
-                    xs.append(x)
-                    zs.append(z)
-                    labels.append(label)
-
-                rx, rz, theta = self.mu
-                path_copy = self.path[:]
-
             ax.clear()
-            ax.set_title("🧭 Cone Landmark Map (Top-down)")
-            ax.set_xlabel("X (mm) → Left/Right")
-            ax.set_ylabel("Z (mm) → Forward")
-            ax.set_xlim(-2000, 2000)
-            ax.set_ylim(0, 6000)
+            ax.set_title("GTSAM Cone SLAM")
+            ax.set_xlabel("X (m)")
+            ax.set_ylabel("Y (m)")
             ax.grid(True)
 
-            ax.scatter(xs, zs, label="Cones")
-            for i, txt in enumerate(labels):
-                ax.text(xs[i], zs[i] + 100, txt, ha='center', fontsize=9)
+            with self.lock:
+                if self.path:
+                    px, py = zip(*self.path)
+                    ax.plot(px, py, 'r--', label='Path')
 
-            ax.plot(rx, rz, marker=(3, 0, math.degrees(theta) - 90),
-                    markersize=15, color='red', label="Robot")
+                for _, (x, y) in self.landmark_ids.items():
+                    ax.plot(x, y, 'bo')
+                    ax.text(x, y + 0.1, 'Cone', ha='center')
 
-            if path_copy:
-                pxs, pzs = zip(*path_copy)
-                ax.plot(pxs, pzs, linestyle='--', color='red')
-
-            plt.pause(0.2)
+            plt.pause(0.5)
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ConeSLAM()
+    node = GTSAMConeSLAM()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
-
