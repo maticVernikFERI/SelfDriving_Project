@@ -2,9 +2,9 @@ name: ROS 2 Python CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, Developement]
   pull_request:
-    branches: [main]
+    branches: [main, Developement]
 
 jobs:
   build-and-test:
