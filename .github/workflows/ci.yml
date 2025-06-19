@@ -36,4 +36,6 @@ jobs:
       run: |
         source /opt/ros/jazzy/setup.bash
         cd project_ROS2_ws
+        source install/setup.bash 
         colcon test
+        pytest -s -v src/car_controls/test/test_keyboard_control.py
