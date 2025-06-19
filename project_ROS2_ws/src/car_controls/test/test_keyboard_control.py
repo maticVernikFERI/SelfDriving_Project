@@ -1,5 +1,11 @@
+import sys
+from unittest.mock import MagicMock
+
+sys.modules["pynput"] = MagicMock()
+sys.modules["pynput.keyboard"] = MagicMock()
+
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from car_controls.keyboard_control_node import KeyboardControlNode
 from std_msgs.msg import String
 
@@ -12,7 +18,6 @@ def node():
     with patch("rclpy.node.Node.__init__", lambda self, name: None), \
          patch.object(KeyboardControlNode, "create_publisher"), \
          patch.object(KeyboardControlNode, "create_timer"), \
-         patch("car_controls.keyboard_control_node.keyboard.Listener"), \
          patch.object(KeyboardControlNode, "get_logger", return_value=MagicMock()):
         n = KeyboardControlNode()
     # Patch publisher to store last message
