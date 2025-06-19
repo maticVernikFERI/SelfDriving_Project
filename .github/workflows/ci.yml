@@ -30,3 +30,9 @@ jobs:
         source /opt/ros/jazzy/setup.bash
         cd project_ROS2_ws
         colcon build --packages-select $(colcon list --names-only)
+
+    - name: Test ROS 2 workspace
+      run: |
+        source /opt/ros/jazzy/setup.bash
+        cd project_ROS2_ws
+        colcon test
